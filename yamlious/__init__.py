@@ -6,17 +6,13 @@ import yaml
 
 try:
     from yaml import CLoader as Loader
-except ImportError:
+except ImportError:  # pragma: no cover
     from yaml import Loader
 
 
 __version__ = (0, 1)
 
 TYPE_RE = re.compile('[a-zA-Z][_a-zA-Z0-9]*')
-
-
-def DEFAULT_YAML_LOADER(istr):
-    return yaml.load(istr, Loader=Loader)
 
 
 def merge_dict(lhs, rhs):
@@ -42,8 +38,19 @@ def merge_dicts(*dicts):
     return reduce(merge_dict, map(lambda e: e[0], list(dicts)))
 
 
-def default_schema_args_builder(data):
-    """ Build voluptuous.Schema function parameters from YAML content
+def from_dict(data):
+    """ Build input parameters of `voluptuous.Schema` constructors from a
+    Python `dict` description.
+
+    :param :dict: data:
+       same structure than what the YAML loader below loads.
+
+    :return: tuple of 2 arguments. The first argument is the dict that must
+      be given to `voluptuous.Schema` class. The second one is the optional
+      `kwargs` argument. Example:
+
+      >>> schema, options = from_dict(dict)
+      >>> voluptuous.Schema(schema, **options)
     """
     assert isinstance(data, dict)
     options = data.get('options', {})
@@ -158,13 +165,10 @@ def default_schema_args_builder(data):
     return (extract_content(content), options)
 
 
-def voluptuous_schema_args(*streams, **kwargs):
+def from_yaml(*streams):
     """ Build voluptuous.Schema function parameters from a streams of YAMLs
     """
-    yaml_loader = kwargs.get('yaml_loader', DEFAULT_YAML_LOADER)
-    schema_args_builder = kwargs.get(
-        'schema_args_builder',
-        default_schema_args_builder
-    )
-    content = merge_dicts(map(yaml_loader, streams))
-    return schema_args_builder(content)
+    return from_dict(merge_dicts(map(
+        lambda f: yaml.load(f, Loader=Loader),
+        streams
+    )))

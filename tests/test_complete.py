@@ -4,7 +4,7 @@ import unittest
 
 import voluptuous
 
-from yamlious import voluptuous_schema_args
+from yamlious import from_yaml
 
 
 class TestComplete(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestComplete(unittest.TestCase):
 
     def test_docido_crawler(self):
         with open(self.get_yaml_file('docido-crawler')) as istr:
-            schema, options = voluptuous_schema_args(istr)
+            schema, options = from_yaml(istr)
         schema = voluptuous.Schema(schema, **options)
 
         valid_item = {
@@ -42,6 +42,12 @@ class TestComplete(unittest.TestCase):
             'type': 'my_type2',
             'description': 'my_description2',
         })
-        schema(valid_item)
-        schema(valid_item_one_attachment)
-        schema(valid_item_two_attachment)
+        self.assertEqual(schema(valid_item), valid_item)
+        self.assertEqual(
+            schema(valid_item_one_attachment),
+            valid_item_one_attachment
+        )
+        self.assertEqual(
+            schema(valid_item_two_attachment),
+            valid_item_two_attachment
+        )
