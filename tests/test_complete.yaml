@@ -1,0 +1,22 @@
+options:
+    extra: true
+    required: true
+content:
+    id: str
+    title: str
+    description: str
+    date:
+        All:
+          - int
+          - Range:
+              min: 0
+    kind: str
+    author:
+        nested:
+            name: str
+    attachments:
+      -
+          title: str
+          origin_id: str
+          type: str
+          description: str

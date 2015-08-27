@@ -1,0 +1,170 @@
+import functools
+import re
+
+import voluptuous
+import yaml
+
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
+
+__version__ = (0, 1)
+
+TYPE_RE = re.compile('[a-zA-Z][_a-zA-Z0-9]*')
+
+
+def DEFAULT_YAML_LOADER(istr):
+    return yaml.load(istr, Loader=Loader)
+
+
+def merge_dict(lhs, rhs):
+    """ Merge content of a dict in another
+
+    :param: dict: lhs
+      dict where is merged the second one
+    :param: dict: rhs
+      dict whose content is merged
+    """
+    assert isinstance(lhs, dict)
+    assert isinstance(rhs, dict)
+    for k, v in rhs.iteritems():
+        if k not in lhs:
+            lhs[k] = v
+        else:
+            lhs[k] = merge_dict(lhs[k], v)
+    return lhs
+
+
+def merge_dicts(*dicts):
+    """ Merge a collection of dict """
+    return reduce(merge_dict, map(lambda e: e[0], list(dicts)))
+
+
+def default_schema_args_builder(data):
+    """ Build voluptuous.Schema function parameters from YAML content
+    """
+    assert isinstance(data, dict)
+    options = data.get('options', {})
+    content = data.get('content', {})
+
+    def get_type(key, type_str):
+        if TYPE_RE.match(type_str) is not None:
+            return eval(type_str)
+        else:
+            raise Exception(("Value of key '{}' must match the "
+                             "following regular expression: {}").format(
+                 key, TYPE_RE.pattern
+             ))
+
+    def to_func(key, func_str, args):
+        if isinstance(args, (str, float, int)):
+            # It is very dangerous to try to convert every string argument
+            # to a Python type...
+            try:
+                args = get_type(key, args)
+            except:
+                pass
+        elif isinstance(args, list):
+            for i in range(len(args)):
+                arg = args[i]
+                if isinstance(arg, dict):
+                    if len(arg) > 1:
+                        raise Exception(
+                            "Invalid parameter {} in function {}".format(
+                                arg.keys()[0], func_str
+                            ))
+                    elif not any(arg):
+                        raise Exception(
+                            "Empty dict parameter in function {}".format(
+                                func_str
+                            )
+                        )
+                    else:
+                        args[i] = to_func(None, *(next(arg.iteritems())))
+                elif isinstance(arg, (str, int, float)):
+                    try:
+                        args[i] = get_type(key, arg)
+                    except:
+                        pass
+                else:
+                    raise NotImplementedError(
+                        "Unhandled parameter {} in function {}".format(
+                            arg, func_str
+                        )
+                    )
+        elif isinstance(args, dict):
+            pass  # FIXME: might be required to recursively evaluate values
+        else:
+            raise NotImplementedError(
+                "Unhandled parameters type {} in function {}".format(
+                    args, func_str
+                )
+            )
+
+        func = getattr(voluptuous, func_str, None)
+        if func is None:
+            return (func_str, args)
+        else:
+            call = '{}('.format(func.__name__)
+            if key is not None:
+                func = functools.partial(func, key)
+                call += '%r, ' % key
+            call += '%r)' % args
+            print call
+            if isinstance(args, list):
+                return func(*args)
+            elif isinstance(args, dict):
+                return func(**args)
+            else:
+                return func(args)
+
+    def extract_content(content, schema=None):
+        schema = schema or dict()
+        for k, v in content.iteritems():
+            k = str(k)
+            if isinstance(v, (int, str, float)):
+                schema[k] = get_type(k, str(v))
+            elif isinstance(v, list):
+                schema[k] = [extract_content(e) for e in v]
+            elif isinstance(v, dict):
+                key = v.pop('key', None)
+                nested = v.pop('nested', None)
+                if key is not None:
+                    # Special key for Required('bla')
+                    if not isinstance(key, dict):
+                        raise Exception("'key' value must be a dict")
+                    elif len(key) != 1:
+                        raise Exception("'key' dict value size must be 1")
+                    k = to_func(None, *next(key.iteritems()))
+                if nested is not None and any(v):
+                    raise Exception((
+                        "In key {}: cannot have both nested dict and extra"
+                        "key(s): {}").format(
+                            k, ','.join(map(str(v.keys())))
+                        ))
+                if nested is not None:
+                    schema[k] = extract_content(nested)
+                elif len(v) > 1:
+                    raise Exception(
+                        "In key " + k +
+                        ": cannot have more than function value"
+                    )
+                else:
+                    schema[k] = to_func(None, *next(v.iteritems()))
+
+        return schema
+    return (extract_content(content), options)
+
+
+def voluptuous_schema_args(*streams, **kwargs):
+    """ Build voluptuous.Schema function parameters from a streams of YAMLs
+    """
+    yaml_loader = kwargs.get('yaml_loader', DEFAULT_YAML_LOADER)
+    schema_args_builder = kwargs.get(
+        'schema_args_builder',
+        default_schema_args_builder
+    )
+    content = merge_dicts(map(yaml_loader, streams))
+    return schema_args_builder(content)
