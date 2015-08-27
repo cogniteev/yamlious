@@ -15,7 +15,6 @@ class TestComplete(unittest.TestCase):
     def test_docido_crawler(self):
         with open(self.get_yaml_file('docido-crawler')) as istr:
             schema, options = voluptuous_schema_args(istr)
-        print schema['date'].__name__
         schema = voluptuous.Schema(schema, **options)
 
         valid_item = {
