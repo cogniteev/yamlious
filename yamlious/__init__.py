@@ -158,6 +158,11 @@ def from_dict(data):
                         "In key " + k +
                         ": cannot have more than function value"
                     )
+                elif len(v) == 0:
+                    raise Exception(
+                        "In key " + k +
+                        ": value cannot be an empty dict"
+                    )
                 else:
                     schema[k] = to_func(None, *next(v.iteritems()))
 
