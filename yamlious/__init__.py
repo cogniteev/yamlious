@@ -35,7 +35,7 @@ def merge_dict(lhs, rhs):
 
 def merge_dicts(*dicts):
     """ Merge a collection of dict """
-    return reduce(merge_dict, map(lambda e: e[0], list(dicts)))
+    return reduce(merge_dict, list(dicts))
 
 
 def from_dict(data):
@@ -168,7 +168,7 @@ def from_dict(data):
 def from_yaml(*streams):
     """ Build voluptuous.Schema function parameters from a streams of YAMLs
     """
-    return from_dict(merge_dicts(map(
+    return from_dict(merge_dicts(*map(
         lambda f: yaml.load(f, Loader=Loader),
-        streams
+        list(streams)
     )))
