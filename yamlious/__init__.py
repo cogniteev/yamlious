@@ -11,7 +11,7 @@ except ImportError:  # pragma: no cover
     from yaml import Loader
 
 
-__version__ = (0, 1, 1)
+__version__ = (0, 1, 2)
 
 TYPE_RE = re.compile('[a-zA-Z][_a-zA-Z0-9]*')
 
