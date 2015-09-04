@@ -49,7 +49,7 @@ The following examples are extracted from the voluptuous documentation.
 ... })
 ```
 
-Parameters given to the `Schema` function can be described with the following YAML file:
+Yamlious can create the very same schema with the following YAML input:
 
 ```yaml
 content:
@@ -69,9 +69,8 @@ content:
 ... })
 ```
 
-the corresponding yamlious file is:
+the corresponding Yamlious file is:
 ```yaml
-content:
 content:
     q:
         key: Required
@@ -102,20 +101,20 @@ Regarding the `q` key description:
 * The key function can be passed as `string` if there is no extra argument to pass, like `q` for instance.
 * There are possible variants:
         
-        ```yaml
-        # key function is a dict without argument
-        q:
-            key:
-                Required:
-        ```
+    ```yaml
+    # key function is a dict without argument
+    q:
+        key:
+          Required:
+    ```
         
-        ```yaml
-        # provides all arguments to function, even the key:
-        q:
-            key:
-                Required:
-                    - q
-        ```
+    ```yaml
+    # provides all arguments to function, even the key:
+    q:
+        key:
+            Required:
+                - q
+    ```
 
 
 ## Tests
