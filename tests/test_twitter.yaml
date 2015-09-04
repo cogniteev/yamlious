@@ -1,0 +1,78 @@
+simple:
+    content:
+        q: str
+        per_page: str
+        page: int
+
+semantic_key_is_empty_dict:
+    content:
+        q:
+            key:
+                Required:
+            All:
+                - str
+                - Length:
+                    min: 1
+        per_page:
+            key:
+                Required:
+                    default: 5
+            All:
+              - int
+              - Range:
+                  min: 1
+                  max: 20
+        page:
+            All:
+                - int
+                - Range:
+                    min: 0
+
+semantic_key_is_string:
+    content:
+        q:
+            key: Required
+            All:
+                - str
+                - Length:
+                    min: 1
+        per_page:
+            key:
+                Required:
+                    default: 5
+            All:
+              - int
+              - Range:
+                  min: 1
+                  max: 20
+        page:
+            All:
+                - int
+                - Range:
+                    min: 0
+
+semantic_key_repeat_key:
+    content:
+        q:
+            key:
+                Required:
+                    - q
+            All:
+                - str
+                - Length:
+                    min: 1
+        per_page:
+            key:
+                Required:
+                    - per_page
+                    - default: 5
+            All:
+              - int
+              - Range:
+                  min: 1
+                  max: 20
+        page:
+            All:
+                - int
+                - Range:
+                    min: 0

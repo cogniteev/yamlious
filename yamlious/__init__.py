@@ -1,4 +1,5 @@
 import functools
+import logging
 import re
 
 import voluptuous
@@ -74,6 +75,10 @@ def from_dict(data):
             except:
                 pass
         elif isinstance(args, list):
+            if any(args) and key is not None and args[0] == key:
+                args.pop(0)
+                if len(args) == 1:
+                    return to_func(key, func_str, args[0])
             for i in range(len(args)):
                 arg = args[i]
                 if isinstance(arg, dict):
@@ -103,7 +108,10 @@ def from_dict(data):
                     )
         elif isinstance(args, dict):
             pass  # FIXME: might be required to recursively evaluate values
+        elif args is None and key is not None:
+            pass
         else:
+
             raise NotImplementedError(
                 "Unhandled parameters type {} in function {}".format(
                     args, func_str
@@ -119,7 +127,7 @@ def from_dict(data):
                 func = functools.partial(func, key)
                 call += '%r, ' % key
             call += '%r)' % args
-            print call
+            logging.debug('yamlious call: {}'.format(call))
             if isinstance(args, list):
                 return func(*args)
             elif isinstance(args, dict):
@@ -140,11 +148,13 @@ def from_dict(data):
                 nested = v.pop('nested', None)
                 if key is not None:
                     # Special key for Required('bla')
+                    if isinstance(key, basestring):
+                        key = {key: None}
                     if not isinstance(key, dict):
                         raise Exception("'key' value must be a dict")
                     elif len(key) != 1:
                         raise Exception("'key' dict value size must be 1")
-                    k = to_func(None, *next(key.iteritems()))
+                    k = to_func(k, *next(key.iteritems()))
                 if nested is not None and any(v):
                     raise Exception((
                         "In key {}: cannot have both nested dict and extra"
@@ -160,7 +170,7 @@ def from_dict(data):
                     )
                 elif len(v) == 0:
                     raise Exception(
-                        "In key " + k +
+                        "In key " + str(k) +
                         ": value cannot be an empty dict"
                     )
                 else:
