@@ -1,4 +1,5 @@
 import functools
+import inspect
 import logging
 import re
 
@@ -141,6 +142,8 @@ def from_dict(data):
             k = str(k)
             if isinstance(v, (int, str, float)):
                 schema[k] = get_type(k, str(v))
+            elif inspect.isclass(v):
+                schema[k] = v
             elif isinstance(v, list):
                 schema[k] = [extract_content(e) for e in v]
             elif isinstance(v, dict):
