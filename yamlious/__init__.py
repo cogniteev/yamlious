@@ -112,12 +112,7 @@ def from_dict(data):
         elif args is None and key is not None:
             pass
         else:
-
-            raise NotImplementedError(
-                "Unhandled parameters type {} in function {}".format(
-                    args, func_str
-                )
-            )
+            return get_type(key, func_str)
 
         func = getattr(voluptuous, func_str, None)
         if func is None:
