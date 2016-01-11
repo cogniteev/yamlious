@@ -43,6 +43,6 @@ setup(
     zip_safe=True,
     install_requires=[
         'PyYAML>=3.11',
-        'voluptuous>=0.8.7',
+        'voluptuous>=0.8.8',
     ]
 )
