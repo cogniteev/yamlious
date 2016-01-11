@@ -1,0 +1,56 @@
+type_only:
+    content:
+        alpha:
+            key:
+                Exclusive:
+                    - alpha
+                    - angles
+            All:
+              - int
+        beta:
+            key:
+                Exclusive:
+                    - beta
+                    - angles
+            All:
+              - int
+
+nested_schema:
+    content:
+        email:
+            key:
+                Exclusive:
+                    - auth
+            nested:
+                email:
+                    key: Required
+                    basestring:
+                password:
+                    key: Required
+                    basestring:
+        internal:
+            key:
+                Exclusive:
+                    - auth
+            nested:
+                secret_key:
+                    key: Required
+                    basestring:
+        social:
+            key:
+                Exclusive:
+                    - auth
+            nested:
+                social_network:
+                    key: Required
+                    basestring:
+                token:
+                    key: Required
+                    basestring:
+
+type_only_required:
+    content:
+        foo:
+            key: Required
+            int:
+
