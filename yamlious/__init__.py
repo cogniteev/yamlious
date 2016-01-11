@@ -15,6 +15,7 @@ except ImportError:  # pragma: no cover
 __version__ = (0, 1, 3)
 
 TYPE_RE = re.compile('[a-zA-Z][_a-zA-Z0-9]*')
+LOGGER = logging.getLogger(__name__)
 
 
 def merge_dict(lhs, rhs):
@@ -123,7 +124,7 @@ def from_dict(data):
                 func = functools.partial(func, key)
                 call += '%r, ' % key
             call += '%r)' % args
-            logging.debug('yamlious call: {}'.format(call))
+            LOGGER.debug('yamlious call: {}'.format(call))
             if isinstance(args, list):
                 return func(*args)
             elif isinstance(args, dict):
