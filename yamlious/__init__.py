@@ -12,7 +12,7 @@ except ImportError:  # pragma: no cover
     from yaml import Loader
 
 
-__version__ = (0, 1, 3)
+__version__ = (0, 2, 0)
 
 TYPE_RE = re.compile('[a-zA-Z][_a-zA-Z0-9]*')
 LOGGER = logging.getLogger(__name__)
