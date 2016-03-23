@@ -63,8 +63,8 @@ def from_dict(data):
         if TYPE_RE.match(type_str) is not None:
             return eval(type_str)
         else:
-            raise Exception(("Value of key '{}' must match the "
-                             "following regular expression: {}").format(
+            raise Exception((u"Value of key '{}' must match the "
+                             u"following regular expression: {}").format(
                  key, TYPE_RE.pattern
              ))
 
@@ -86,12 +86,12 @@ def from_dict(data):
                 if isinstance(arg, dict):
                     if len(arg) > 1:
                         raise Exception(
-                            "Invalid parameter {} in function {}".format(
+                            u"Invalid parameter {} in function {}".format(
                                 arg.keys()[0], func_str
                             ))
                     elif not any(arg):
                         raise Exception(
-                            "Empty dict parameter in function {}".format(
+                            u"Empty dict parameter in function {}".format(
                                 func_str
                             )
                         )
@@ -104,7 +104,7 @@ def from_dict(data):
                         pass
                 else:
                     raise NotImplementedError(
-                        "Unhandled parameter {} in function {}".format(
+                        u"Unhandled parameter {} in function {}".format(
                             arg, func_str
                         )
                     )
@@ -119,12 +119,12 @@ def from_dict(data):
         if func is None:
             return (func_str, args)
         else:
-            call = '{}('.format(func.__name__)
+            call = u'{}('.format(func.__name__)
             if key is not None:
                 func = functools.partial(func, key)
                 call += '%r, ' % key
             call += '%r)' % args
-            LOGGER.debug('yamlious call: {}'.format(call))
+            LOGGER.debug(u'yamlious call: {}'.format(call))
             if isinstance(args, list):
                 return func(*args)
             elif isinstance(args, dict):
@@ -157,7 +157,7 @@ def from_dict(data):
                 if nested is not None and any(v):
                     raise Exception((
                         "In key {}: cannot have both nested dict and extra"
-                        "key(s): {}").format(
+                        u"key(s): {}").format(
                             k, ','.join(map(str(v.keys())))
                         ))
                 if nested is not None:

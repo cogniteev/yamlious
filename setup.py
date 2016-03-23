@@ -1,11 +1,11 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 module_name = 'yamlious'
 description = "Build voluptuous schema from yaml files"
 root_url = 'https://github.com/cogniteev/' + module_name
 
 # Extract version from module __init__.py
-init_file = '{}/__init__.py'.format(module_name.replace('-', '_').lower())
+init_file = u'{}/__init__.py'.format(module_name.replace('-', '_').lower())
 __version__ = None
 with open(init_file) as istr:
     for l in istr:
