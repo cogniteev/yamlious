@@ -1,0 +1,25 @@
+language: python
+sudo: required
+python:
+- '2.7'
+install:
+- travis_retry pip install -r requirements-dev.txt
+- travis_retry pip install tox>=2.3.1 coveralls
+script:
+- tox -e $(echo py$TRAVIS_PYTHON_VERSION | tr -d . )
+after_success: coveralls --verbose
+branches:
+  only:
+  - master
+  - /^v.*$/
+deploy:
+  provider: pypi
+  user: tcarel
+  password:
+    secure: Is9Y4JPbRPYdZbSEpcaG3D3VDqa+wVFvR7YDcgpp5D7SMeShnazIH6hq8GzZTvf7ZBtgC6lHe/cyqrYgBsmMZGoHRTd8g8RlVq8nkmRThcHS8PzCo2yf/3Bd/7Yo3xk+fo/d1TPaulJjhNMT1LNPXOG37lBP2a7bTMcSWD43J7ra/RaTScvVnD0oOOEtxp8eu5Q5kUKAASvxPbE5iJzJZEtdX4Ejw/WSzvIrfWnwbr0xJ2YaN/Cz31syCrZyBC5E9k+fWlEzW2VCKhkqMuy3uLbduqGId5unNlyPqTWN5EgOai7hbuhEMRic2KdWqNMcDmXpF6PODv8HDemMv3kJY8Erpg44wYaTwuzS+lwj3Faf2zLz+H5DQdKoEic1YjHmkbiSv98jucmPHaxmcVTzuwBdl6/AFn9Ga5s3oYG6BChckxP1vM8hM/1ToToZAHyEQ1otr3f034kgJGdIu3kTnIgpATQbv5SG+VAeMERgE6aylns2yTXak3Ssv6GvkTBbahybfWKhHshsCDbcjXET7BNOlXYPD+U1wm9DG2Dcx5DonedpS3UsvTV9Whr63ot4d4YbfhSXHK/CQrJ2NfmBcYgAnbWfpNCJG7YuA3jLud/sM9JlmRJQWEvJb0Bio4IFHNPbySjIyYI1W2NpoGAvqfGoRa2pFKpkkMtiwuDSQto=
+  on:
+    tags: true
+    repo: cogniteev/yamlious
+notifications:
+  slack:
+    secure: Pti6WROwFYs9Ymdya7ngHqYM66s1gFfoo+swIrZGjys1BlYiSvgsGkJop57wQjm3o0mxyjdqF+fVSiuMEh1Qdvt3sKlE7VOcBxSwdl6+FjVevJWTU3eB9od/xe3L63w/OgxuSv2yE/YBqM9huocF+LwGOymwlN1ZhjG5NK0bEO9FaQ0YhHNVMVyIx13C9fPMEHsRk07ewRAbwV6k/uEdh1qsrredGQ/aqfGLf62+fFw5YG+BTqgjtTvST19Kc6RssBxjkVr4I5KZn6r+TgRyYmX2vLdCzAj4mW2bO/CJm2bhYp/b+WqGfabNa2T4YdocOc8Tljy+UI5XTDbgksrJ8pQFl5VOeJb36y92RWdMJEjoUMkpSyE63sjOH///3ewmwYcnWwdVGa3YnQv4yLd8QOT1ieLzMn4o1vAxXvdRkOhFdEjz8u+2hV9T1jCDKm2PGpo+ePCaXShwwpVm96oOzWHigRyUGMPKhMwChSmbqMPMjIqAC+4txrNYAvAJz0+UrhhV64P/tqF8zA/hyjIGx2K+diBKNqgdoonGJBrvKw11WYWh4vyfbPTwotnOgV6KWU9R1zxxckaA8W4XZlDrB1MDatfqFTXPPJYJpy3HcM8/8ydAnOTCbnZzGUXYZl6mec5OftAaKtADvyhL3++JfXP02/q0iaBJQuaifPmEgl4=
