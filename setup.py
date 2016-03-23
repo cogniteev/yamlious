@@ -5,23 +5,19 @@ description = "Build voluptuous schema from yaml files"
 root_url = 'https://github.com/cogniteev/' + module_name
 
 # Extract version from module __init__.py
-init_file = u'{}/__init__.py'.format(module_name.replace('-', '_').lower())
 __version__ = None
-with open(init_file) as istr:
-    for l in istr:
-        if l.startswith('__version__ = '):
-            exec(l)
-            break
-version = '.'.join(map(str, __version__))
+with open('yamlious/__init__.py') as istr:
+    for l in filter(lambda l: l.startswith('__version__ ='), istr):
+        exec(l)
 
 setup(
     name=module_name,
-    version=version,
+    version=__version__,
     description=description,
     author='Cogniteev',
     author_email='tech@cogniteev.com',
     url=root_url,
-    download_url=root_url + '/tarball/v' + version,
+    download_url=root_url + '/tarball/v' + __version__,
     license='Apache license version 2.0',
     keywords='yaml voluptuous schema validation',
     classifiers=[
